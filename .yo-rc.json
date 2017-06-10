@@ -1,0 +1,8 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "version": "1.1.1",
+    "libraryName": "hello-tri-spug-solution",
+    "libraryId": "070dc823-dd91-403b-bc23-9d765affdf77",
+    "environment": "spo"
+  }
+}

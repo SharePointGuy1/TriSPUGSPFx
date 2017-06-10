@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "name": "hello-tri-spug-solution-client-side-solution",
+    "id": "070dc823-dd91-403b-bc23-9d765affdf77",
+    "version": "1.0.0.0"
+  },
+  "paths": {
+    "zippedPackage": "solution/hello-tri-spug-solution.sppkg"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "entry": "./lib/webparts/helloTriSpug/HelloTriSpugWebPart.js",
+      "manifest": "./src/webparts/helloTriSpug/HelloTriSpugWebPart.manifest.json",
+      "outputPath": "./dist/hello-tri-spug.bundle.js"
+    }
+  ],
+  "externals": {},
+  "localizedResources": {
+    "helloTriSpugStrings": "webparts/helloTriSpug/loc/{locale}.js"
+  }
+}

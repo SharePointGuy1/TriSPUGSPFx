@@ -13,6 +13,7 @@ export default class HelloTriSpug extends React.Component<IHelloTriSpugProps, vo
               <span className="ms-font-xl ms-fontColor-white">Welcome to SharePoint!</span>
               <p className="ms-font-l ms-fontColor-white">Customize SharePoint experiences using Web Parts.</p>
               <p className="ms-font-l ms-fontColor-white">{escape(this.props.description)}</p>
+              <p className="ms-font-l ms-fontColor-white">Purpose: {escape(this.props.purpose)}</p>
               <a href="https://aka.ms/spfx" className={styles.button}>
                 <span className={styles.label}>Learn more</span>
               </a>

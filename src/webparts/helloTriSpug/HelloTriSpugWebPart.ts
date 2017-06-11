@@ -8,13 +8,37 @@ import {
   PropertyPaneCheckbox,
   PropertyPaneDropdown,
   PropertyPaneToggle,
-  PropertyPaneLink
+  PropertyPaneLink,
+  PropertyPaneHorizontalRule                
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'helloTriSpugStrings';
 import HelloTriSpug from './components/HelloTriSpug';
 import { IHelloTriSpugProps } from './components/IHelloTriSpugProps';
 import { IHelloTriSpugWebPartProps } from './IHelloTriSpugWebPartProps';
+
+import MockHttpClient from './MockHttpClient';
+import {
+  SPHttpClient,
+  SPHttpClientResponse
+} from '@microsoft/sp-http';
+
+import {
+  Environment,
+  EnvironmentType
+} from '@microsoft/sp-core-library';
+
+export interface ISPLists {
+  value: ISPList[];
+}
+
+export interface ISPList {
+  Title: string;
+  Id: string;
+  BaseType: number;
+}
+
+import styles from './components/HelloTriSpug.module.scss';
 
 export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTriSpugWebPartProps> {
 
@@ -33,6 +57,56 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
     );
 
     ReactDom.render(element, this.domElement);
+    this._renderListAsync();
+  }
+
+  protected _renderListAsync() {
+    // Local environment
+    if (Environment.type === EnvironmentType.Local) {
+      this._getMockListData().then((response) => {
+        this._renderList(response.value);
+      });
+    }
+    else if (Environment.type == EnvironmentType.SharePoint ||
+      Environment.type == EnvironmentType.ClassicSharePoint) {
+      this._getListData()
+        .then((response) => {
+          this._renderList(response.value);
+        });
+    }
+  }
+  private _getMockListData() {
+    return MockHttpClient.get()
+      .then((data: ISPList[]) => {
+        var listData: ISPLists = { value: data };
+        return listData;
+      }) as Promise<ISPLists>;
+  }
+
+  private _getListData(): Promise<ISPLists> {
+    let api: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists?`;
+    if (!this.properties.showHidden) {
+      api += '$filter=Hidden eq false';
+    }
+    return this.context.spHttpClient.get(api, SPHttpClient.configurations.v1)
+      .then((response: SPHttpClientResponse) => {
+        return response.json();
+      });
+  }
+
+  private _renderList(items: ISPList[]): void {
+
+    let html: string = '';
+    items.forEach((item: ISPList) => {
+      html += `
+        <ul class="${styles.listItem}">
+            <li class="${styles.listItem}">
+                <span class="ms-font-l">${item.Title}</span>
+            </li>
+        </ul>`;
+    });
+    const listContainer: Element = this.domElement.querySelector('#spListContainer');
+    listContainer.innerHTML = html;
   }
 
   protected get dataVersion(): Version {
@@ -60,6 +134,7 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
                 PropertyPaneCheckbox('showHidden', {
                   text: strings.ShowHiddenFieldLabel
                 }),
+                PropertyPaneHorizontalRule(),
                 PropertyPaneTextField('howMany', { label: 'Show how many lists' }),
                 PropertyPaneDropdown('listType', {
                   label: strings.ListTypeFieldLabel,
@@ -70,14 +145,14 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
                   ]
                 }),
                 PropertyPaneToggle('showUrl', {
-                  label: 'Show the url',
+                  label: strings.ShowUrlFieldLabel,// 'Show the url', 
                   onText: 'Show',
                   offText: "Don't show"
                 }),
                 PropertyPaneLink('url', {
-                  target: "new",
+                  target: "_blank",
                   href: 'https://holmesinfosys.sharepoint.com/sites/MyDevSite',
-                  text: 'My Site'
+                  text: strings.WebAddressFieldLabel,// 'My Site'                
                 })
               ]
             }

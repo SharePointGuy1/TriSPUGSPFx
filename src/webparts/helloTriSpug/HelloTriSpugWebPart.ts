@@ -109,7 +109,7 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
     });
     html += '</ul>';
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
-    listContainer.innerHTML += html;
+    listContainer.innerHTML = html;
   }
 
   protected get dataVersion(): Version {

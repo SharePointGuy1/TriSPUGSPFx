@@ -97,13 +97,12 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
   private _renderList(items: ISPList[]): void {
 
     let html: string = '';
-    html +=  '<p class="ms-font-l ms-fontColor-blue">Loading from \'' + this.context.pageContext.web.title + '\'</p>\n';
+    html += '<p class="ms-font-l ms-fontColor-blue">Loading from \'' + this.context.pageContext.web.title + '\'</p>\n';
 
     html += '<ul class="${styles.listItem}">';
     items.forEach((item: ISPList) => {
-      html += `
-        
-            <li class="${styles.listItem}">
+      html += `        
+            <li class="${styles.listItem}" baseType="${item.BaseType}">
                 <span class="ms-font-l">${item.Title}</span>
             </li>
         `;

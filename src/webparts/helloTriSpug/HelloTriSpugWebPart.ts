@@ -9,7 +9,7 @@ import {
   PropertyPaneDropdown,
   PropertyPaneToggle,
   PropertyPaneLink,
-  PropertyPaneHorizontalRule                
+  PropertyPaneHorizontalRule
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'helloTriSpugStrings';
@@ -97,16 +97,20 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
   private _renderList(items: ISPList[]): void {
 
     let html: string = '';
+    html +=  '<p class="ms-font-l ms-fontColor-blue">Loading from \'' + this.context.pageContext.web.title + '\'</p>\n';
+
+    html += '<ul class="${styles.listItem}">';
     items.forEach((item: ISPList) => {
       html += `
-        <ul class="${styles.listItem}">
+        
             <li class="${styles.listItem}">
                 <span class="ms-font-l">${item.Title}</span>
             </li>
-        </ul>`;
+        `;
     });
+    html += '</ul>';
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
-    listContainer.innerHTML = html;
+    listContainer.innerHTML += html;
   }
 
   protected get dataVersion(): Version {

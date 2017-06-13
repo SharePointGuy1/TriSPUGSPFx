@@ -8,6 +8,6 @@ define([], function () {
     "HowManyFieldLabel": "Show how many lists",
     "ListTypeFieldLabel": "Show what list types",
     "ShowUrlFieldLabel": "Show the url?",
-    WebAddressFieldLabel: "Url of site"
+    "WebAddressFieldLabel": "Url of site"
   }
 });

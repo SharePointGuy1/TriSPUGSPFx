@@ -84,9 +84,21 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
   }
 
   private _getListData(): Promise<ISPLists> {
-    let api: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists?`;
+    let api: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists`;
+    let filter: string = '';
     if (!this.properties.showHidden) {
-      api += '$filter=Hidden eq false';
+      filter = '?$filter=Hidden eq false';
+    }
+    if (this.properties.howMany) {
+      if (filter) {
+        filter += "&";
+      } else {
+        filter = '?';
+      }
+      filter += '$top=' + this.properties.howMany.toString();
+    }
+    if (filter) {
+      api += filter;
     }
     return this.context.spHttpClient.get(api, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {

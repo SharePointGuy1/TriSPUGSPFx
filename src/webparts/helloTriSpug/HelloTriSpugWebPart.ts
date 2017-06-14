@@ -57,7 +57,14 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
     );
 
     ReactDom.render(element, this.domElement);
-    this._renderListAsync();
+    if (this.displayMode == 1) { // do not update if in edit mode (https://github.com/SharePoint/sp-dev-docs/blob/master/reference/spfx/sp-core-library/displaymode.md)
+      this._renderListAsync();
+    }
+  }
+
+  // turns off all reactive property changes
+  protected get disableReactivePropertyChanges(): boolean {
+    return true;
   }
 
   protected _renderListAsync() {

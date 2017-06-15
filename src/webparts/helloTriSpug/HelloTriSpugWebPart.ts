@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { Version } from '@microsoft/sp-core-library';
+import { Version } from '@microsoft/sp-core-library'; // there is separate import for Environment pieces
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
@@ -9,7 +9,9 @@ import {
   PropertyPaneDropdown,
   PropertyPaneToggle,
   PropertyPaneLink,
-  PropertyPaneHorizontalRule
+  PropertyPaneHorizontalRule,
+  PropertyPaneCustomField,            // for sample custom field
+  IPropertyPaneDropdownOption
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'helloTriSpugStrings';
@@ -135,6 +137,46 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
     return Version.parse('1.0');
   }
 
+  // render the custom field
+  private _customFieldRender(elem: HTMLElement): void {
+    elem.innerHTML = '<div><h1>This is a custom field.</h1></div>';
+  }
+
+  // for the async list dropdown
+  private _options: IPropertyPaneDropdownOption[];
+  protected onInit(): Promise<void> {
+    return this._getLists().then(lists => {
+      this._options = lists.map(list => {
+        return {
+          key: list.Id,
+          text: list.Title
+        };
+      });
+    });
+  }
+
+  private _getLists(): Promise<any> {
+    if (Environment.type === EnvironmentType.Local) {
+      return new Promise<any>(resolve => {
+        setTimeout(() => resolve([
+          { Title: 'Mock List', Id: '1', BaseType: 0 },
+          { Title: 'Mock List 2', Id: '2', BaseType: 1 },
+          { Title: 'Mock List 3', Id: '3', BaseType: 0 }]),
+          500);
+      });
+    }
+    else {
+      const url: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists?$filter=Hidden eq false`;
+      return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
+        .then((response: SPHttpClientResponse) => {
+          return response.json();
+        }).then((json) => {
+          return json.value;
+        });
+    }
+  }  // end for the async list dropdown
+
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
@@ -158,12 +200,16 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
                 }),
                 PropertyPaneHorizontalRule(),
                 PropertyPaneTextField('howMany', { label: 'Show how many lists' }),
-                PropertyPaneDropdown('listType', {
+                PropertyPaneDropdown('listType', {    // https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.basetype.aspx
                   label: strings.ListTypeFieldLabel,
                   options: [
-                    { key: 'All', text: 'All' },
-                    { key: '0', text: 'Lists Only' },
-                    { key: '1', text: 'Document Libraries' }
+                    { key: '-1', text: 'All' },
+                    { key: '0', text: 'Lists Only' }, // GenericList
+                    { key: '1', text: 'Document Libraries' }, // DocumentLibrary
+                    { key: '2', text: 'Unused' },       // Unused
+                    { key: '3', text: 'DiscussionBoard' },  // DiscussionBoard
+                    { key: '4', text: 'Survey' }, // Survey
+                    { key: '5', text: 'Issue' }
                   ]
                 }),
                 PropertyPaneToggle('showUrl', {
@@ -176,9 +222,29 @@ export default class HelloTriSpugWebPart extends BaseClientSideWebPart<IHelloTri
                   href: 'https://holmesinfosys.sharepoint.com/sites/MyDevSite',
                   text: strings.WebAddressFieldLabel,// 'My Site'                
                 })
+
               ]
             }
           ]
+        }, {
+          header: {
+            description: "This is page 2"
+          },
+          groups: [{
+            groupName: "Group 1 of Page 2",
+            groupFields: [
+              PropertyPaneCustomField({
+                key: 'customField',
+                onRender: this._customFieldRender.bind(this)
+              })
+            ]
+          }, {
+            groupName: "Group 2 of Page 2", groupFields: [PropertyPaneDropdown('listName', {  // for the async list dropdown
+              label: 'Select a list',
+              selectedKey: this._options.length > 0 ? this._options[0].key : null,
+              options: this._options
+            })]
+          }]
         }
       ]
     };

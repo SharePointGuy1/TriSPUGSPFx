@@ -6,4 +6,6 @@ export interface IHelloTriSpugWebPartProps {
   listType: string;
   showUrl: boolean;
   url: string;
+  customField: string;
+  listName: string;
 }

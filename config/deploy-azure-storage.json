@@ -1,6 +1,6 @@
 {
   "workingDir": "./temp/deploy/",
-  "account": "<!-- STORAGE ACCOUNT NAME -->",
-  "container": "hello-tri-spug-solution",
-  "accessKey": "<!-- ACCESS KEY -->"
+  "account": "spguy",
+  "container": "trispugspfx",
+  "accessKey": "ugvvGJ29BJl8jy0G5qaAhhJfdQ/heg7usJxxQarHyBYREzlKOKGqwn6b8NV3Vu4e688Vqw4SWR/cRDU6kDGLJA=="
 }
